@@ -1,0 +1,215 @@
+/* sane-diff page styles.
+   Levels: important (green), attention (violet), supporting (light green), tests (blue), other (grey).
+   Red is only used for removed lines and removed words. */
+:root {
+  --bg: #fbfbf8; --fg: #1d2421; --mu: #69736e; --ln: #dfe3df; --pn: #f1f3ef; --card: #ffffff;
+  --important: #1e8a4f;  --important-a: #d3efdf;
+  --attention: #7a4fd0;  --attention-a: #ebe2fc;
+  --supporting: #84a83c; --supporting-a: #eef5d9;
+  --tests: #2f73c2;      --tests-a: #dce9f9;
+  --other: #9aa29e;      --other-a: #eceeec;
+  --off-a: #f0f1ef;
+  --plus: #1e8a4f; --minus: #c43d3d;
+  --wa-b: rgba(30, 138, 79, .25); --wa-c: #0c4f2b;
+  --wd-b: rgba(196, 61, 61, .2);  --wd-c: #8c1d1d;
+  --must: #c43d3d; --must-a: #fbe3e1; --should: #c27a12; --should-a: #fbedd6; --ask: #7a4fd0;
+  --ui: "Avenir Next", Avenir, "Nunito Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --code: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111513; --fg: #e3e9e5; --mu: #8f9a94; --ln: #2a322e; --pn: #181e1b; --card: #141916;
+    --important-a: #173a27; --attention-a: #2c2147; --supporting-a: #2a3317; --tests-a: #172a44;
+    --other-a: #222826; --off-a: #1a201d;
+    --wa-b: rgba(60, 190, 115, .35); --wa-c: #c3f5d6; --wd-b: rgba(230, 90, 90, .35); --wd-c: #ffd9d6;
+    --must-a: #3e1c1c; --should-a: #3a2a12;
+  }
+}
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14.5px/1.5 var(--ui) }
+a { color: inherit; cursor: pointer }
+.mono { font-family: var(--code) }
+.x-important  { --c: var(--important);  --a: var(--important-a) }
+.x-attention  { --c: var(--attention);  --a: var(--attention-a) }
+.x-supporting { --c: var(--supporting); --a: var(--supporting-a) }
+.x-tests      { --c: var(--tests);      --a: var(--tests-a) }
+.x-other      { --c: var(--other);      --a: var(--other-a) }
+
+/* ---- layout and side list */
+.wrap { display: flex }
+nav { position: sticky; top: 0; height: 100vh; overflow: auto; width: 240px; flex: none;
+  border-right: 1px solid var(--ln); padding: 14px 8px }
+.nv { display: flex; align-items: center; gap: 9px; padding: 4px 10px; border-radius: 999px; text-decoration: none; font-size: 13px }
+.nv:hover, .nv.on { background: var(--pn) }
+.nv i, .lg i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; display: inline-block }
+.nv.done .nt { opacity: .45; text-decoration: line-through }
+.nt { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.nc { font-size: 12px }
+body.m-file nav .ns, body.m-story nav .nf { display: none }
+body.m-file #bystory, body.m-story #byfile { display: none }
+main { flex: 1; min-width: 0; padding: 18px 26px 80px }
+
+/* ---- header */
+header .tl { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
+h1 { font-size: 21px; font-weight: 650; margin: 0; letter-spacing: -.01em }
+.meta { color: var(--mu); font-size: 13px }
+.p { color: var(--plus) } .m { color: var(--minus) }
+.sw2 { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap }
+.vw { display: inline-flex; background: var(--pn); border-radius: 999px; padding: 2px }
+.vw button { border: 0; background: transparent; color: var(--mu); font: 12.5px var(--ui); padding: 3px 12px; border-radius: 999px; cursor: pointer }
+.vw button.on { background: var(--card); color: var(--fg); box-shadow: 0 1px 2px rgba(0, 0, 0, .12) }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 }
+.chip { font-size: 12px; text-decoration: none; border-radius: 999px; padding: 2px 10px; background: var(--pn) }
+.chip span { color: var(--mu); font-family: var(--code); font-size: 11.5px }
+.chip.sev-must { background: var(--must-a) } .chip.sev-should { background: var(--should-a) }
+.warn { color: var(--should); font-size: 12.5px }
+
+/* ---- map: stories (rows) x files (columns) */
+details.map { margin: 12px 0; background: var(--card); border: 1px solid var(--ln); border-radius: 14px }
+details.map > summary { cursor: pointer; padding: 6px 14px; font-size: 12.5px; color: var(--mu); font-weight: 600 }
+.mapw { max-height: 340px; overflow: auto; padding: 0 14px 12px }
+table.matrix { border-collapse: collapse }
+table.matrix thead th { position: sticky; top: 0; background: var(--card); z-index: 1; vertical-align: bottom }
+th.mf { padding: 0 0 8px; font-weight: 400; width: 26px }
+th.mf a { display: block; margin: 0 auto; writing-mode: vertical-rl; transform: rotate(180deg); max-height: 150px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; font: 11.5px var(--code); color: var(--mu) }
+th.mf a:hover { color: var(--fg); text-decoration: underline }
+th.ms { text-align: left; font-weight: 400; padding: 3px 18px 3px 0; position: sticky; left: 0; background: var(--card); z-index: 1 }
+th.ms a { display: flex; align-items: center; gap: 9px; text-decoration: none; max-width: 340px }
+th.ms .num { flex: none; display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center;
+  border-radius: 50%; border: 2px solid var(--c); color: var(--c); font: 700 11.5px var(--ui) }
+th.ms .sname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px }
+th.ms a:hover .num { background: var(--c); color: #fff }
+th.ms a:hover .sname { text-decoration: underline }
+table.matrix td { width: 26px; min-width: 26px; height: 30px; text-align: center; padding: 0 }
+table.matrix tbody tr:hover td, table.matrix tbody tr:hover th.ms { background: var(--pn) }
+a.dot { display: inline-block; border-radius: 50%; background: var(--c); vertical-align: middle }
+a.dot.d1 { width: 8px; height: 8px } a.dot.d2 { width: 12px; height: 12px } a.dot.d3 { width: 16px; height: 16px }
+a.dot:hover { box-shadow: 0 0 0 3px var(--a) }
+
+/* ---- legend */
+.legend { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0 4px; font-size: 12px }
+.lg { display: flex; gap: 6px; align-items: center; border: 0; background: var(--pn); color: var(--fg); border-radius: 999px;
+  padding: 3px 11px; cursor: pointer; font: 12px var(--ui) }
+.lgk { color: var(--mu); display: flex; gap: 5px; align-items: center; flex-wrap: wrap }
+.swa { display: inline-block; width: 18px; height: 10px; border-radius: 3px; background: var(--important-a) }
+.swa.del { background: repeating-linear-gradient(135deg, var(--important) 0 1px, transparent 1px 6px), var(--important-a) }
+.swa.un { background: var(--off-a); border: 1px dashed var(--mu) }
+
+/* ---- sections */
+section.sec { margin-top: 26px }
+.hid { display: none !important }
+.sh { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap }
+.tb { font: 600 11.5px var(--ui); color: var(--c, var(--mu)); display: inline-flex; align-items: center; gap: 6px }
+.tb::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--mu)) }
+.sh h2 { font-size: 16.5px; font-weight: 650; margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere }
+.sh h2.mono { font-size: 14px; font-weight: 600 }
+.cnt { font-size: 12px; color: var(--mu) }
+.sbs { display: flex; gap: 4px }
+.dn { font-size: 12px; color: var(--mu); cursor: pointer }
+a.sb { display: inline-flex; align-items: center; gap: 5px; min-width: 22px; height: 20px; justify-content: center;
+  border-radius: 6px; background: var(--c); color: #fff; font: 700 11.5px var(--ui); padding: 0 7px; text-decoration: none; flex: none }
+a.sb span { font-weight: 600; font-size: 10.5px; opacity: .9 }
+.sbs a.sb span { display: none }
+.file { background: var(--card); border: 1px solid var(--ln); border-radius: 12px; margin: 8px 0; overflow: hidden }
+.fh { padding: 4px 12px; font-size: 12.5px; border-bottom: 1px solid var(--ln); display: flex; gap: 8px; align-items: center }
+.fh .whole { margin-left: auto; font: 12px var(--ui); color: var(--mu); text-decoration: none }
+.fh .whole:hover { color: var(--fg) }
+.badge { font: 11px var(--ui); background: var(--pn); border-radius: 999px; padding: 0 8px; color: var(--mu) }
+
+/* ---- code */
+table.d { width: 100%; border-collapse: collapse; table-layout: fixed; font: 12.5px/1.6 var(--code) }
+table.d td { padding: 0 8px; vertical-align: top }
+col.c-ln { width: 50px } col.c-sg { width: 18px } col.c-sp { width: 0 } td.sp { padding: 0 }
+td.ln { text-align: right; color: var(--mu); user-select: none; border-right: 3px solid transparent; font-size: 11.5px }
+td.sg { user-select: none; font-weight: 700; color: var(--mu) }
+td.cd { white-space: pre-wrap; word-break: break-word }
+tr.hh td { background: var(--pn); color: var(--mu); font: 11.5px var(--ui); padding: 2px 12px }
+.hl { float: right }
+tr.ctx td.cd { color: var(--mu) }
+table.s td.ln:nth-child(3) { border-left: 1px solid var(--ln) }
+/* added = solid tint, removed = thin stripes; both in the level's color */
+.add[class*=x-] { background: var(--a) }
+.del[class*=x-] { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c) 30%, transparent) 0 1px, transparent 1px 12px),
+  color-mix(in srgb, var(--a) 45%, var(--card)) }
+tr.add[class*=x-] td.ln, tr.del[class*=x-] td.ln, td.ln.add[class*=x-], td.ln.del[class*=x-] { border-right-color: var(--c) }
+.add.off { background: var(--off-a) }
+.del.off { background: repeating-linear-gradient(135deg, var(--ln) 0 1px, transparent 1px 12px), var(--off-a) }
+tr.off td.cd, td.off.cd { opacity: .6 }
+tr.un td.ln, td.ln.un { border-right: 3px dashed var(--mu) }
+tr.add td.sg { color: var(--plus) } tr.del td.sg { color: var(--minus) }
+tr.x-other td.cd, td.x-other.cd { opacity: .65 }
+td.gap { background: repeating-linear-gradient(45deg, var(--pn) 0 2px, transparent 2px 7px) }
+.wa, .wd { font-weight: 650; border-radius: 3px; padding: 0 1px }
+.wa { background: var(--wa-b); color: var(--wa-c) } .wd { background: var(--wd-b); color: var(--wd-c) }
+.add .nl { color: var(--wa-c) } .del .nl { color: var(--wd-c) }
+a.sym { text-decoration: underline dotted; text-underline-offset: 3px; text-decoration-color: var(--mu) }
+a.sym:hover { text-decoration: underline solid; color: var(--tests) }
+tr.gaprow td { background: var(--pn); color: var(--mu); font: 11.5px var(--ui); padding: 2px 72px }
+
+/* ---- notes, explanations, issues */
+tr.ar td { padding: 3px 8px 4px 72px }
+tr.ex-row td { padding-top: 6px }
+.ann { font: 13px/1.45 var(--ui); border-radius: 10px; background: var(--pn); max-width: 900px }
+.ann summary, .ann.flat { display: flex; gap: 7px; align-items: center; padding: 3px 10px; cursor: pointer; list-style: none; min-width: 0 }
+.ann.flat { cursor: default }
+.ann summary::-webkit-details-marker { display: none }
+.ann summary::after { content: "+"; color: var(--mu); margin-left: auto; padding-left: 8px; font-weight: 700 }
+.ann[open] summary::after { content: "−" }
+.at { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0 }
+.ann[open] .at { white-space: normal }
+.aid { font-size: 11.5px } .ai { flex: none }
+.am, .ac { padding: 2px 12px 8px 30px; color: var(--mu) }
+.ac { display: flex; gap: 8px; align-items: flex-start; font-style: italic; color: var(--fg) }
+.ac span { flex: 1 }
+.ann.ex { background: transparent; color: var(--mu); border-radius: 8px }
+.ann.ex summary, .ann.ex.flat { padding-left: 4px }
+.ann.ex[open] { background: var(--pn); color: var(--fg) }
+.ann.sev-must { background: var(--must-a); box-shadow: inset 3px 0 var(--must) }
+.ann.sev-should { background: var(--should-a); box-shadow: inset 3px 0 var(--should) }
+.ann.sev-nit { box-shadow: inset 3px 0 var(--supporting) }
+.ann.sev-question { box-shadow: inset 3px 0 var(--ask) }
+.ann.secf .aid { font-variant-numeric: tabular-nums }
+button.copy { font: 11.5px var(--ui); border: 0; background: var(--card); color: var(--fg); border-radius: 999px; padding: 2px 10px; cursor: pointer }
+
+/* ---- group bar, security box, mechanical list */
+.gnav { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 12.5px; color: var(--mu);
+  background: var(--pn); border-radius: 999px; padding: 5px 14px; margin-bottom: 14px }
+.gnav b { color: var(--fg) } .gnav a { color: var(--tests); text-decoration: none } .gnav a:hover { text-decoration: underline }
+.gnav .dim { opacity: .6 } .gnav select { margin-left: auto; font: 12.5px var(--ui); max-width: 100% }
+.secbox { margin: 10px 0; background: var(--card); border: 1px solid var(--ln); border-radius: 14px; padding: 8px 14px; font-size: 13px }
+.secbox .chips { margin: 8px 0 0 } .chip b { font-size: 11px }
+.secrow { margin-top: 8px } .secrow .mono { font-size: 11.5px; color: var(--mu) }
+.tb.mechtb { --c: var(--other) }
+table.mech { border-collapse: collapse; font-size: 13px; width: 100%; background: var(--card); border-radius: 12px; overflow: hidden }
+table.mech td, table.mech th { border-bottom: 1px solid var(--ln); padding: 4px 10px; text-align: left }
+table.mech td.mono { font: 12.5px var(--code); word-break: break-all }
+.fold > summary { cursor: pointer; color: var(--mu); font-size: 12.5px; margin: 4px 0 }
+.muted { color: var(--mu); padding: 6px 12px }
+
+/* ---- jump highlight and view switches */
+.flash { animation: fl 1.6s ease-out }
+@keyframes fl { 0% { box-shadow: 0 0 0 3px var(--important) } 100% { box-shadow: 0 0 0 3px transparent } }
+tr.flash td { animation: flb 1.6s ease-out }
+@keyframes flb { 0% { background: color-mix(in srgb, var(--important) 35%, transparent) } 100% { background: transparent } }
+body.split table.u { display: none } body:not(.split) table.s { display: none }
+@media (max-width: 800px) {
+  .wrap { display: block }
+  nav { position: static; width: auto; height: auto; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--ln) }
+  main { padding: 14px 16px }
+  col.c-ln { width: 36px } tr.ar td { padding-left: 8px }
+  table.s { display: none !important } table.u { display: table !important } .vw[data-sw=view] { display: none }
+}
+
+/* ---- text tags instead of icons */
+.tag { flex: none; font: 600 10.5px var(--ui); letter-spacing: .02em; border-radius: 999px; padding: 1px 8px;
+  background: var(--tb, var(--card)); color: var(--tc, var(--mu)) }
+.t-must { --tb: var(--must); --tc: #fff } .t-should { --tb: var(--should); --tc: #fff }
+.t-question { --tb: var(--attention-a); --tc: var(--attention) } .t-nit { --tb: var(--supporting-a); --tc: #4d6420 }
+.t-doc { --tb: var(--tests-a); --tc: var(--tests) } .t-note { --tb: var(--card); --tc: var(--mu) }
+.chip b { font-weight: 650 }
+.chip.sev-must b { color: var(--must) } .chip.sev-should b { color: var(--should) } .chip.sev-question b { color: var(--attention) }
+.nc { flex: none; font: 700 10.5px var(--ui); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center; background: var(--pn); color: var(--mu) }
+.nc.sev-must { background: var(--must); color: #fff } .nc.sev-should { background: var(--should); color: #fff }
+.nc.sev-question { background: var(--attention-a); color: var(--attention) }
